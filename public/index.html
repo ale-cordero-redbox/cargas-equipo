@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de cargas — Diseño 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,900;1,8..60,400;1,8..60,500;1,8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* RedBox Design System — tokens tomados de colors_and_type.css */
+    --rb-red:#D43E33;
+    --rb-red-deep:#CE3A2B;
+    --rb-red-shadow:#8F1F18;
+    --rb-red-soft:#EC6255;
+    --rb-black:#262424;
+    --rb-ink:#022626;
+    --rb-charcoal:#3A3737;
+    --rb-gray-700:#545252;
+    --rb-gray-500:#8C8888;
+    --rb-gray-300:#C9C5C5;
+    --rb-gray-100:#ECE9E8;
+    --rb-bone:#F2F2F2;
+    --rb-white:#FFFFFF;
+
+    --fg-1:var(--rb-black);
+    --fg-2:var(--rb-gray-700);
+    --fg-3:var(--rb-gray-500);
+    --fg-brand:var(--rb-red);
+    --bg-page:var(--rb-white);
+    --bg-card:var(--rb-bone);
+    --bg-muted:var(--rb-gray-100);
+    --bg-inverse:var(--rb-black);
+    --bg-brand:var(--rb-red);
+    --border-1:rgba(38,36,36,.12);
+    --border-2:rgba(38,36,36,.24);
+    --border-red:var(--rb-red);
+
+    /* semáforo / etapa — el sistema no define amarillo/verde, elegí tonos cálidos y muted que no rompan la paleta (nada de rosa/durazno/salmón) */
+    --stage-amber:#F0B429;
+    --stage-amber-bg:#FCEBC0;
+    --stage-green:#2E9E52;
+    --stage-green-bg:#D9F0E1;
+
+    --radius-sm:4px;
+    --radius-md:8px;
+    --radius-lg:16px;
+    --radius-pill:999px;
+    --notch:14px;
+
+    --shadow-1:0 1px 2px rgba(38,36,36,.06);
+    --shadow-2:0 4px 16px rgba(38,36,36,.08);
+    --shadow-3:0 12px 40px rgba(38,36,36,.14);
+    --shadow-red:0 12px 30px rgba(212,62,51,.28);
+
+    --ease-out:cubic-bezier(.22,1,.36,1);
+    --ease-in-out:cubic-bezier(.65,0,.35,1);
+    --dur-fast:150ms;
+    --dur:220ms;
+    --dur-slow:420ms;
+
+    --font-sans:'Montserrat',sans-serif;
+    --font-display:'Montserrat',sans-serif;
+    --font-serif:'Source Serif 4',serif;
+
+    /* alias de compatibilidad con el resto de la hoja de estilos */
+    --paper:var(--bg-muted);
+    --paper-2:var(--rb-gray-300);
+    --ink:var(--fg-1);
+    --ink-soft:var(--fg-2);
+    --line:var(--border-1);
+    --card:var(--bg-card);
+    --slate:var(--rb-charcoal);
+    --slate-2:var(--rb-gray-700);
+    --rojo:var(--rb-red);
+    --rojo-bg:rgba(212,62,51,.12);
+    --amarillo:var(--stage-amber);
+    --amarillo-bg:var(--stage-amber-bg);
+    --verde:var(--stage-green);
+    --verde-bg:var(--stage-green-bg);
+    --shadow:var(--shadow-2);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-page);
+    color:var(--ink);
+    font-family:var(--font-serif);
+    -webkit-font-smoothing:antialiased;
+    padding: 40px 48px 80px;
+  }
+  .mono{font-family:var(--font-sans);}
+  .serif{font-family:var(--font-display);}
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom: 3px solid var(--rb-red);
+    padding-bottom:18px;
+    margin-bottom:34px;
+  }
+  .eyebrow{
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--fg-brand);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:40px;
+    text-transform:uppercase;
+    margin:0;
+    line-height:1.02;
+    letter-spacing:0.01em;
+  }
+  .header-meta{
+    text-align:right;
+    font-family:var(--font-sans);
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.7;
+  }
+  .header-meta b{color:var(--ink);}
+
+  section{margin-bottom:80px;}
+  .section-title{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .section-title .num{
+    font-family:var(--font-serif);
+    font-style:italic;
+    font-weight:600;
+    font-size:15px;
+    color:var(--rb-red);
+    border:none;
+    padding:0;
+    background:none;
+  }
+  .section-title h2{
+    font-family:var(--font-display);
+    font-size:19px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .section-sub{
+    font-family:var(--font-serif);
+    font-size:14.5px;
+    color:var(--ink-soft);
+    margin: -8px 0 18px 0;
+    max-width:720px;
+  }
+
+  /* ---------- Person strip ---------- */
+  .people-strip{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:10px;
+  }
+  .person-card{
+    background:var(--card);
+    border:1px solid var(--border-1);
+    border-radius:var(--radius-md);
+    padding:14px 14px 12px;
+    box-shadow:var(--shadow-1);
+    position:relative;
+    cursor:pointer;
+    transition:transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .person-card:hover{transform:translateY(-2px); border-color:var(--rb-gray-500); box-shadow:var(--shadow-2);}
+  .person-card.selected{border-color:var(--rb-red); border-width:2px; box-shadow:none;}
+  .person-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .person-name{font-family:var(--font-display); font-size:16px; font-weight:700;}
+  .dot{width:9px;height:9px;border-radius:50%; flex-shrink:0;}
+  .dot.Rojo{background:var(--rojo);}
+  .dot.Amarillo{background:var(--amarillo);}
+  .dot.Verde{background:var(--verde);}
+  .dot.OUT{background:var(--rb-gray-500);}
+  .person-load{
+    font-family:var(--font-sans);
+    font-size:26px;
+    font-weight:600;
+    line-height:1;
+  }
+  .person-load-label{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-top:2px;}
+  .person-bar{height:4px; border-radius:2px; background:var(--paper-2); margin-top:10px; overflow:hidden;}
+  .person-bar-fill{height:100%;}
+  .person-count{font-size:11px; color:var(--ink-soft); margin-top:8px;}
+
+  /* ---------- Notices (vencidos antiguos / sin fecha / fuera de rango) ---------- */
+  .alerts{display:flex; flex-direction:column; gap:8px; margin-bottom:14px;}
+  .alert{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--card);
+    border-left:3px solid var(--rojo);
+    border-radius:0 6px 6px 0;
+    padding:11px 14px;
+    box-shadow:var(--shadow);
+    font-size:13.5px;
+  }
+  .alert.warn{border-left-color:var(--amarillo);}
+  .alert.neutral{border-left-color:var(--rb-gray-500);}
+  .alert .tag{
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    padding:2px 7px;
+    border-radius:var(--radius-sm);
+    background:var(--rojo-bg);
+    color:var(--rojo);
+    white-space:nowrap;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  .alert.warn .tag{background:var(--amarillo-bg); color:var(--amarillo);}
+  .alert.neutral .tag{background:var(--rb-gray-300); color:var(--rb-charcoal);}
+  .alert b{font-weight:600;}
+  .no-alerts{
+    font-family:var(--font-serif);
+    font-size:14px;
+    color:var(--ink-soft);
+    font-style:italic;
+    padding:10px 2px;
+  }
+
+  /* ---------- Person tabs ---------- */
+  .person-tabs{
+    display:flex;
+    gap:4px;
+    flex-wrap:wrap;
+    border-bottom:2px solid var(--rb-black);
+    margin-bottom:18px;
+  }
+  .person-tab{
+    font-family:var(--font-sans);
+    font-weight:600;
+    font-size:12.5px;
+    padding:9px 16px 8px;
+    background:transparent;
+    border:none;
+    border-bottom:3px solid transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+    transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+  .person-tab:hover{background:var(--rb-gray-100); color:var(--ink);}
+  .person-tab.active{
+    color:var(--rb-red);
+    font-weight:700;
+    background:var(--card);
+    border-bottom-color:var(--rb-red);
+  }
+  .person-tab .count{
+    font-family:var(--font-sans);
+    font-size:10px;
+    background:var(--rb-gray-300);
+    padding:1px 6px;
+    border-radius:var(--radius-pill);
+    color:var(--rb-charcoal);
+  }
+  .person-tab.active .count{background:var(--rb-red); color:#fff;}
+
+  /* ---------- Person panel + day timeline ---------- */
+  .person-panel-head{
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .person-panel-head .pname{font-family:var(--font-display); font-weight:800; font-size:22px; text-transform:uppercase; letter-spacing:.01em;}
+  .person-panel-head .pmeta{font-family:var(--font-sans); font-size:12.5px; color:var(--ink-soft);}
+  .person-panel-head .pmeta b{color:var(--ink);}
+
+  .day-grid-wrap{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow-1);
+    overflow-x:auto;
+    padding:10px 6px 6px;
+  }
+  .day-grid{
+    display:flex;
+    min-width:max-content;
+  }
+  .day-col{
+    flex:0 0 68px;
+    width:68px;
+    border-left:1px solid var(--paper-2);
+    display:flex;
+    flex-direction:column;
+  }
+  .day-col:first-child{border-left:none;}
+  .day-col.week-start{border-left:2px solid var(--rb-black);}
+  .day-col.weekend .day-col-head{background:var(--rb-gray-100);}
+  .day-col.weekend .day-col-body{background:repeating-linear-gradient(135deg, var(--rb-gray-100), var(--rb-gray-100) 5px, var(--bg-card) 5px, var(--bg-card) 10px);}
+  .day-col-head{
+    text-align:center;
+    padding:2px 2px 8px;
+    font-family:var(--font-sans);
+  }
+  .day-col-head .wd{font-size:9.5px; font-weight:600; text-transform:uppercase; color:var(--ink-soft); letter-spacing:.04em;}
+  .day-col-head .dn{font-size:14px; font-weight:700; color:var(--ink);}
+  .day-col-head .mo{font-size:8.5px; color:var(--rb-gray-500); text-transform:uppercase; letter-spacing:.05em; height:11px;}
+  .day-col.today .day-col-head{background:var(--rb-red); border-radius:var(--radius-sm); padding-top:2px; clip-path:polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);}
+  .day-col.today .day-col-head .wd, .day-col.today .day-col-head .dn{color:#fff;}
+  .day-col.today .day-col-head .mo{color:rgba(255,255,255,.75);}
+  .day-col.weekend .day-col-head .dn{color:var(--rb-gray-500);}
+  .day-col.weekend .day-col-head .wd{color:var(--rb-gray-500);}
+  .day-col-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    padding:4px 0;
+    min-height:90px;
+    border-top:1px solid var(--paper-2);
+  }
+  .day-col-body.gantt{padding:4px 0 18px;}
+  .day-col-body.cluster{border-radius:var(--radius-sm);}
+  .gantt-row{
+    display:flex;
+    align-items:stretch;
+    padding:1px 2px;
+  }
+  .gantt-bar{
+    flex:1;
+    font-family:var(--font-sans);
+    font-weight:600;
+    font-size:9px;
+    line-height:18px;
+    padding:0 4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    cursor:default;
+  }
+  .gantt-bar.seg-start{border-top-left-radius:var(--radius-sm); border-bottom-left-radius:var(--radius-sm); margin-left:2px;}
+  .gantt-bar.seg-end{border-top-right-radius:var(--radius-sm); border-bottom-right-radius:var(--radius-sm); margin-right:2px;}
+  .day-chip{
+    font-family:var(--font-sans);
+    font-weight:500;
+    font-size:9.5px;
+    padding:3px 4px;
+    border-radius:var(--radius-sm);
+    line-height:1.25;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    cursor:default;
+  }
+  .cluster-tag{
+    font-family:var(--font-sans);
+    font-size:8.5px;
+    color:var(--ink);
+    font-weight:600;
+    text-align:center;
+    position:absolute;
+    bottom:2px;
+    left:0;
+    right:0;
+  }
+  .day-col-body.gantt{position:relative;}
+  .sinfecha-list{margin-top:14px;}
+  .sinfecha-list .label{
+    font-family:var(--font-sans);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .sinfecha-chips{display:flex; flex-wrap:wrap; gap:6px;}
+
+  @keyframes rbFadeSlide{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  #person-panel{animation:rbFadeSlide var(--dur-slow) var(--ease-out);}
+
+  .chip{
+    font-family:var(--font-sans);
+    font-weight:500;
+    font-size:10.5px;
+    padding:3px 6px;
+    border-radius:var(--radius-sm);
+    line-height:1.3;
+    cursor:default;
+    border:1px solid transparent;
+    max-width: 100%;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .stage-00_Hold{background:var(--rb-gray-300); color:var(--rb-charcoal);}
+  .stage-01_Inicio{background:var(--stage-green); color:#fff;}
+  .stage-02_Medio{background:var(--stage-amber); color:#2A1E08;}
+  .stage-03_Final{background:var(--rb-red); color:#fff;}
+  .stage-00_Cerrado{background:var(--rb-black); color:#fff;}
+
+  /* ---------- Table ---------- */
+  .controls{
+    display:flex;
+    gap:10px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  select, input[type=text]{
+    font-family:var(--font-sans);
+    font-size:12.5px;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    background:var(--card);
+    color:var(--ink);
+  }
+  select:focus, input:focus{outline:2px solid var(--rb-red); outline-offset:1px;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    box-shadow:var(--shadow-1);
+    font-size:13px;
+  }
+  thead th{
+    text-align:left;
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    padding:10px 12px;
+    border-bottom:1.5px solid var(--rb-black);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--rb-red);}
+  tbody td{
+    font-family:var(--font-serif);
+    padding:10px 12px;
+    border-bottom:1px solid var(--paper-2);
+    vertical-align:top;
+  }
+  tbody tr:hover{background:var(--paper);}
+  tbody tr.overdue-row td:first-child{border-left:3px solid var(--rojo);}
+  .num-cell{font-family:var(--font-sans); color:var(--ink-soft);}
+  .fecha-cell{font-family:var(--font-sans); white-space:nowrap;}
+  .fecha-cell.overdue{color:var(--rojo); font-weight:600;}
+  .badge-stage{
+    font-family:var(--font-sans);
+    font-weight:600;
+    font-size:10.5px;
+    padding:3px 7px;
+    border-radius:var(--radius-sm);
+    white-space:nowrap;
+  }
+  .asignados-cell{display:flex; flex-wrap:wrap; gap:4px;}
+  .who-chip{
+    font-family:var(--font-sans);
+    font-weight:500;
+    font-size:10.5px;
+    padding:2px 8px;
+    border-radius:var(--radius-pill);
+    background:var(--paper-2);
+    color:var(--ink);
+  }
+  footer{
+    margin-top:50px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    font-style:italic;
+    color:var(--ink-soft);
+    font-family:var(--font-serif);
+  }
+
+  @media (max-width:720px){
+    body{padding:24px 16px 60px;}
+    h1{font-size:28px;}
+    header{flex-direction:column; align-items:flex-start;}
+    .header-meta{text-align:left;}
+  }
+
+  /* ---------- Edit panel ---------- */
+  .editbar{
+    background:var(--bg-card);
+    border:1px solid var(--border-1);
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow-1);
+    padding:14px 16px;
+    margin-bottom:34px;
+  }
+  .editbar-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .editbar-row + .editbar-row{margin-top:10px;}
+  .ed-dot{width:8px;height:8px;border-radius:50%; background:var(--stage-green); flex-shrink:0;}
+  .ed-status{font-family:var(--font-sans); font-size:12.5px; font-weight:600; color:var(--ink);}
+  .editbar button{
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    padding:8px 14px;
+    border:1px solid var(--rb-black);
+    border-radius:var(--radius-sm);
+    background:var(--rb-black);
+    color:#fff;
+    cursor:pointer;
+    transition:background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .editbar button:hover{background:var(--rb-red); border-color:var(--rb-red);}
+  .editbar button:active{transform:translateY(1px);}
+  #ed-add, #ed-close{background:transparent; color:var(--ink); border-color:var(--border-2);}
+  #ed-add:hover, #ed-close:hover{background:var(--rb-red); color:#fff; border-color:var(--rb-red);}
+  .ed-help{
+    font-family:var(--font-serif);
+    font-size:12.5px;
+    color:var(--ink-soft);
+    max-width:900px;
+  }
+
+  /* ---------- Identity bar ---------- */
+  .identity-bar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    font-family:var(--font-sans); font-size:12.5px;
+    margin-bottom:14px;
+  }
+  .identity-bar .id-label{color:var(--ink-soft);}
+  .identity-bar select{
+    font-family:var(--font-sans); font-size:12.5px; padding:6px 9px;
+    border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg-page); color:var(--ink);
+  }
+  .id-change{
+    font-family:var(--font-sans); font-size:11px; text-transform:uppercase; letter-spacing:.03em;
+    background:transparent; border:1px solid var(--border-2); color:var(--ink-soft);
+    padding:4px 9px; border-radius:var(--radius-pill); cursor:pointer;
+  }
+  .id-change:hover{border-color:var(--rb-red); color:var(--rb-red);}
+
+  /* ---------- Registrar horas ---------- */
+  .horas-summary{font-family:var(--font-serif); font-size:14px; color:var(--ink-soft); margin-bottom:14px;}
+  .horas-week{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    font-family:var(--font-sans); font-size:12.5px; color:var(--ink);
+    margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .horas-week label{font-weight:600;}
+  .horas-week input[type=date]{
+    font-family:var(--font-sans); font-size:12.5px; padding:6px 8px;
+    border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg-page); color:var(--ink);
+  }
+  .horas-week-range{color:var(--ink-soft); font-style:italic; font-family:var(--font-serif);}
+  .horas-grid{display:flex; flex-direction:column; gap:8px; margin-bottom:14px;}
+  .horas-row{
+    display:grid; grid-template-columns: 1fr 130px 90px;
+    align-items:center; gap:12px;
+    background:var(--bg-card); border:1px solid var(--border-1); border-radius:var(--radius-md);
+    padding:10px 14px;
+  }
+  .horas-proyecto{font-family:var(--font-sans); font-weight:600; font-size:13px;}
+  .horas-acum{font-family:var(--font-sans); font-size:11.5px; color:var(--ink-soft);}
+  .horas-row input{
+    font-family:var(--font-sans); font-size:13px; padding:6px 8px; text-align:right;
+    border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg-page); color:var(--ink);
+  }
+  #horas-save{
+    font-family:var(--font-sans); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.03em;
+    padding:9px 16px; border:1px solid var(--rb-black); border-radius:var(--radius-sm);
+    background:var(--rb-black); color:#fff; cursor:pointer;
+    transition:background var(--dur-fast) var(--ease-out);
+  }
+  #horas-save:hover{background:var(--rb-red); border-color:var(--rb-red);}
+
+  /* ---------- Editor de proyectos ---------- */
+  .editor-wrap{
+    margin-top:16px;
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    background:var(--bg-page);
+  }
+  table.editor{width:100%; border-collapse:collapse; font-size:12px; min-width:1100px;}
+  table.editor th{
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--ink-soft);
+    text-align:left;
+    padding:8px 6px;
+    border-bottom:1.5px solid var(--rb-black);
+    white-space:nowrap;
+    position:sticky; top:0; background:var(--bg-page);
+  }
+  table.editor td{padding:4px 5px; border-bottom:1px solid var(--paper-2); vertical-align:middle;}
+  table.editor input[type=text], table.editor input[type=date], table.editor select{
+    font-family:var(--font-sans);
+    font-size:11.5px;
+    padding:5px 6px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    background:var(--bg-page);
+    color:var(--ink);
+    width:100%;
+    box-sizing:border-box;
+  }
+  table.editor input.ed-cliente, table.editor input.ed-nombre{min-width:110px;}
+  table.editor input.ed-que{min-width:130px;}
+  table.editor input.ed-num{width:48px;}
+  table.editor input.ed-fecha{width:128px;}
+  table.editor input.ed-asig{width:44px; text-align:center;}
+  table.editor .ed-del{
+    background:transparent; border:1px solid var(--border-2); color:var(--rb-red);
+    border-radius:var(--radius-sm); width:26px; height:26px; cursor:pointer; font-size:13px; line-height:1;
+    padding:0;
+  }
+  table.editor .ed-del:hover{background:var(--rb-red); color:#fff; border-color:var(--rb-red);}
+  .team-editor{
+    display:flex; flex-wrap:wrap; gap:14px;
+    margin-top:16px; padding-top:14px; border-top:1px solid var(--line);
+  }
+  .team-editor .te-item{display:flex; flex-direction:column; gap:4px; font-family:var(--font-sans); font-size:11.5px;}
+  .team-editor select{
+    font-family:var(--font-sans); font-size:12px; padding:6px 8px;
+    border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg-page); color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Diseño · Pestaña 2026</div>
+    <h1>Panel de cargas</h1>
+  </div>
+  <div class="header-meta">
+    Generado a partir de <b>Cargas_Diseño.xlsx</b><br>
+    <span id="today-label"></span><br>
+    <span id="active-count"></span>
+  </div>
+</header>
+
+<div class="identity-bar" id="identity-bar"></div>
+
+<div class="editbar" id="editbar">
+  <div class="editbar-row">
+    <span class="ed-dot" id="ed-dot"></span>
+    <span class="ed-status" id="ed-status">Cargando…</span>
+    <button id="ed-toggle">✎ Editar datos</button>
+  </div>
+  <div class="ed-help">
+    Los cambios se guardan en el servidor (Netlify Blobs) — cualquiera que entre a este link ve y edita los mismos datos, sin necesidad de cuenta. No hay contraseñas: si dos personas editan lo mismo al mismo tiempo, gana el último guardado.
+  </div>
+  <div id="editor-panel" style="display:none;"></div>
+</div>
+
+<section>
+  <div class="section-title"><span class="num">01</span><h2>Estado del equipo</h2></div>
+  <div class="people-strip" id="people-strip"></div>
+</section>
+
+<section>
+  <div class="section-title"><span class="num">02</span><h2>Registrar horas</h2></div>
+  <div id="horas-panel"></div>
+</section>
+
+<section>
+  <div class="section-title"><span class="num">03</span><h2>Timeline por persona</h2></div>
+  <div class="person-tabs" id="person-tabs"></div>
+  <div class="person-panel" id="person-panel"></div>
+</section>
+
+<section>
+  <div class="section-title"><span class="num">04</span><h2>Todos los proyectos activos</h2></div>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Buscar cliente o proyecto…" style="width:220px;">
+    <select id="filter-persona"><option value="">Todas las personas</option></select>
+    <select id="filter-etapa">
+      <option value="">Todas las etapas</option>
+      <option value="00_Hold" style="background:#C9C5C5;color:#3A3737;">Hold</option>
+      <option value="01_Inicio" style="background:#2E9E52;color:#FFFFFF;">Inicio</option>
+      <option value="02_Medio" style="background:#F0B429;color:#2A1E08;">Medio</option>
+      <option value="03_Final" style="background:#D43E33;color:#FFFFFF;">Final</option>
+    </select>
+    <select id="show-closed">
+      <option value="active">Solo activos</option>
+      <option value="all">Incluir cerrados</option>
+    </select>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th data-key="num">#</th>
+        <th data-key="cliente">Cliente</th>
+        <th data-key="nombre">Proyecto</th>
+        <th data-key="que">Siguiente paso</th>
+        <th data-key="fechaInicio">Inicio</th>
+        <th data-key="fechaFinal">Fin</th>
+        <th data-key="avance">Etapa</th>
+        <th>Asignados</th>
+        <th>Horas</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</section>
+
+<footer>
+  Primer acercamiento — dime qué ajustar: pesos de carga, definición de "cruce de fechas", columnas nuevas, o si quieres que conecte directo con tu Excel para que se actualice solo.
+</footer>
+
+<script>
+// Copia local de respaldo (última actualización manual). Se usa si no hay Sheets conectado o si falla la conexión.
+const FALLBACK_DATA = {"people": ["Ale", "Moni", "Grecia", "José", "Sof", "Emiliano", "Majo", "JP", "Nacho", "Jos"], "semaforo": {"Ale": "Rojo", "Moni": "Amarillo", "Grecia": "Amarillo", "José": "Amarillo", "Sof": "Rojo", "Emiliano": "OUT", "Majo": "Rojo", "JP": "Rojo", "Nacho": "Verde", "Jos": "Amarillo"}, "proyectos": [{"num": "40", "cliente": "PepsiCo", "nombre": "Calle Live Experience", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "227", "cliente": "Pisa", "nombre": "Marca OCT", "que": "Ajustes visualizaciones", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Sof": 0.0, "Majo": 0.0, "Nacho": 0.0, "Jos": 0.0}}, {"num": "191", "cliente": "Los Trompos", "nombre": "Rebranding experience", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Grecia": 0.0, "Sof": 0.0, "Emiliano": 0.0}}, {"num": "212", "cliente": "ITESM", "nombre": "Tec Ventures - NIC", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0}}, {"num": "228", "cliente": "ADM", "nombre": "Innovation Day", "que": "Visualizaciones + Presentacion", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0}}, {"num": "20", "cliente": "Bayer", "nombre": "Innovation Squad", "que": "Diseño de template y mejorar pres", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "43", "cliente": "ADM", "nombre": "Diseño Minino Bites de Pavo", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Moni": 0.0, "Majo": 0.0}}, {"num": "45", "cliente": "Bayer", "nombre": "Murales", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "77", "cliente": "Amgen", "nombre": "Seguimiento POA", "que": "Entrega final", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "204", "cliente": "Cubasa", "nombre": "Estrategia de comunicación", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "230", "cliente": "Gear Hugger", "nombre": "Migración Shopify", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "R03", "cliente": "RedBox", "nombre": "Template 2026", "que": "Template más ligero", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Majo": 0.0}}, {"num": "R06", "cliente": "RedBox", "nombre": "Línea del tiempo", "que": "Viniles", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Majo": 0.0}}, {"num": "R07", "cliente": "RedBox", "nombre": "Kits Interns", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Majo": 0.0}}, {"num": "144", "cliente": "Grupo Versa", "nombre": "Diseño Envase", "que": "Entrega final", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Sof": 0.0, "Emiliano": 0.0}}, {"num": "151", "cliente": "Berries Paradise", "nombre": "Rebranding", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Sof": 0.0}}, {"num": "152", "cliente": "Grupo Ollamani", "nombre": "Rediseño Kiosco", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Sof": 0.0, "Emiliano": 0.0}}, {"num": "164", "cliente": "Aditivo", "nombre": "Rediseño Tienda", "que": "Entrega final", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Sof": 0.0, "Emiliano": 0.0}}, {"num": "235", "cliente": "Coppel", "nombre": "Mundial 2026", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {}}, {"num": "R08", "cliente": "RedBox", "nombre": "Propuesta Roborock", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {}}, {"num": "167", "cliente": "Bepensa", "nombre": "Entrenamiento en innovacion", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "137", "cliente": "AT&T", "nombre": "Atlas de arquetipos", "que": "Entrega", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "R05", "cliente": "RedBox", "nombre": "Propuesta Grupo Escato", "que": "Mini credenciales", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Emiliano": 0.0}}, {"num": "12", "cliente": "AlEn", "nombre": "Arquitectura de marca aromatizantes", "que": "Pres y matrices", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "R12", "cliente": "RedBox", "nombre": "HowTo AI Summit", "que": "Presentación", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "9", "cliente": "OCESA", "nombre": "Journey de Experiencias", "que": "Siguiente sesión", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "R10", "cliente": "RedBox", "nombre": "Buena Banda", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0}}, {"num": "49", "cliente": "Berries Paradise", "nombre": "Validación", "que": "Ajustes branding", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "JP": 0.0}}, {"num": "R14", "cliente": "RedBox", "nombre": "Cesantoni Propuesta", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Emiliano": 0.0}}, {"num": "R13", "cliente": "RedBox", "nombre": "Puerta", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {}}, {"num": "193", "cliente": "Bepensa", "nombre": "Movilidad", "que": "Pimpeo conceptos", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "187", "cliente": "MIDE", "nombre": "Branding y posicionamiento", "que": "Download horizontes + Brandbook", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "JP": 0.0}}, {"num": "xx", "cliente": "Herdez", "nombre": "Cambios", "que": "PlayBook y Modelo", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "4", "cliente": "Actinver", "nombre": "Propuesta de valor Nuevo banco", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "8", "cliente": "Bosque Real", "nombre": "Embajadores de marca", "que": "Wireframes", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Grecia": 0.0, "Majo": 0.0}}, {"num": "R01", "cliente": "RedBox", "nombre": "Anuario 2025", "que": "Casos", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Moni": 0.0, "Majo": 0.0}}, {"num": "R11", "cliente": "RedBox", "nombre": "Propuesta Georgie Boy", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Sof": 0.0}}, {"num": "88", "cliente": "HIR Expo", "nombre": "Hackaton HIR Expo", "que": "Branding Sesión", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Majo": 0.0}}, {"num": "225", "cliente": "Actinver E2E", "nombre": "Concepto nuevo banco", "que": "Entrega final", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Sof": 0.0, "Emiliano": 0.0, "Majo": 0.0}}, {"num": "R15", "cliente": "RedBox", "nombre": "Carnimax Propuesta", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Emiliano": 0.0}}, {"num": "231", "cliente": "Gear Hugger", "nombre": "Diseño de páginas", "que": "Ajustes", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Majo": 0.0}}, {"num": "30", "cliente": "GoFarma", "nombre": "Carpeta logos", "que": "Brandbook actualizado", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Ale": 0.0, "Grecia": 0.0, "Emiliano": 0.0, "Majo": 0.0, "JP": 0.0}}, {"num": "65", "cliente": "Bosque Real", "nombre": "Aston Martin", "que": "Ajustes", "fechaInicio": null, "fechaFinal": null, "avance": "00_Cerrado", "asignados": {"Emiliano": 0.0, "Majo": 0.0}}, {"num": "75", "cliente": "Amgen", "nombre": "Mensajería instantánea", "que": "Catch up", "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {"Ale": 0.0}}, {"num": "R02", "cliente": "RedBox", "nombre": "Página", "que": "Casos", "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {"Ale": 0.0, "José": 0.0}}, {"num": "R04", "cliente": "RedBox", "nombre": "Proceso RedBox", "que": "Mails de inicio y sesión", "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {"Ale": 0.0}}, {"num": "R09", "cliente": "RedBox", "nombre": "Template Keynote Inteligencia", "que": "Template Modelos", "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {"Majo": 0.0}}, {"num": "102", "cliente": "Coca-Cola", "nombre": "Game Plan Q3", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {"Ale": 0.0, "Sof": 0.0, "Majo": 0.0}}, {"num": "89", "cliente": "Koltin", "nombre": "Modelo de Comunidades", "que": null, "fechaInicio": null, "fechaFinal": null, "avance": "00_Hold", "asignados": {}}, {"num": "7", "cliente": "Pastelrías Panamá", "nombre": "Rediseño de empaques", "que": "Clusters", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-24", "avance": "01_Inicio", "asignados": {"Ale": 1.0, "Sof": 0.0, "Emiliano": 0.0, "Majo": 0.0}}, {"num": "55", "cliente": "Dorothy Gaynor", "nombre": "Diseño de espacio", "que": "Mueble de atracción y ajustes.", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-24", "avance": "01_Inicio", "asignados": {"Ale": 1.0, "Grecia": 0.0, "Sof": 0.0, "Emiliano": 1.0, "JP": 0.0}}, {"num": "61", "cliente": "Berries Paradise", "nombre": "Página web", "que": "Check", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-27", "avance": "01_Inicio", "asignados": {"Ale": 0.0, "Grecia": 1.0, "JP": 0.0}}, {"num": "75", "cliente": "Chevez", "nombre": "Rebranding", "que": "Brandbook básico y check página", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-21", "avance": "01_Inicio", "asignados": {"Ale": 1.0, "Grecia": 1.0, "Majo": 1.0, "JP": 0.0}}, {"num": "208", "cliente": "Herdez", "nombre": null, "que": null, "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-20", "avance": "01_Inicio", "asignados": {"JP": 1.0}}, {"num": "51", "cliente": "Petland", "nombre": "End to end", "que": "Preguntar a Pau B", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-24", "avance": "02_Medio", "asignados": {"Ale": 1.0, "Grecia": 0.0, "Sof": 0.0, "Emiliano": 1.0, "JP": 1.0, "Nacho": 0.0}}, {"num": "39", "cliente": "MascotaCare", "nombre": "E2E", "que": null, "fechaInicio": "2026-07-01", "fechaFinal": null, "avance": "02_Medio", "asignados": {"Ale": 0.0, "Sof": 0.0, "Emiliano": 0.0, "Majo": 0.0, "JP": 0.0, "Nacho": 0.0}}, {"num": "6", "cliente": "Pastelerías Panamá", "nombre": "Est. de marca y Exp. de compra", "que": "Entregas Week3", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-24", "avance": "02_Medio", "asignados": {"Ale": 0.0, "Sof": 1.0, "Emiliano": 0.5, "JP": 1.0, "Nacho": 0.0}}, {"num": "58", "cliente": "Teletón", "nombre": "Diseño merch", "que": "Entrega final", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-24", "avance": "03_Final", "asignados": {"Ale": 0.0, "Grecia": 0.0, "Majo": 1.0}}, {"num": "57", "cliente": "Elías Balas", "nombre": "Restaurante", "que": "Espectaculares y lona", "fechaInicio": "2026-07-01", "fechaFinal": "2026-07-22", "avance": "03_Final", "asignados": {"Majo": 1.0, "JP": 1.0}}, {"num": "226", "cliente": "Devlyn", "nombre": "Ejecución 16 sucursales nuevas", "que": "Bloque 3", "fechaInicio": null, "fechaFinal": null, "avance": "03_Final", "asignados": {"Sof": 0.0, "Emiliano": 0.0}}, {"num": null, "cliente": "REVISAR", "nombre": null, "que": null, "fechaInicio": null, "fechaFinal": null, "avance": null, "asignados": {}}, {"num": null, "cliente": "CERRADO POR COMISIONAR", "nombre": null, "que": null, "fechaInicio": null, "fechaFinal": null, "avance": null, "asignados": {}}]};
+
+const STAGE_LABEL = {
+  '00_Hold':'Hold', '01_Inicio':'Inicio', '02_Medio':'Medio', '03_Final':'Final', '00_Cerrado':'Cerrado'
+};
+const STAGE_COLOR = {
+  '00_Hold':{bg:'#C9C5C5',c:'#3A3737'},
+  '01_Inicio':{bg:'#2E9E52',c:'#FFFFFF'},
+  '02_Medio':{bg:'#F0B429',c:'#2A1E08'},
+  '03_Final':{bg:'#D43E33',c:'#FFFFFF'},
+  '00_Cerrado':{bg:'#262424',c:'#FFFFFF'},
+};
+const STAGE_ORDER = ['00_Hold','01_Inicio','02_Medio','03_Final'];
+const EXCLUDED_PEOPLE = ['Moni','Jos','José'];
+
+// color único para todos los integrantes — el color ahora se reserva para el estatus de la carga (etapa)
+const TEAM_COLOR = '#262424';
+function personColor(p){ return TEAM_COLOR; }
+
+function isActive(p){ return p.avance && p.avance !== '00_Cerrado'; }
+function parseFecha(f){ if(!f) return null; const [y,m,d]=f.split('-').map(Number); return new Date(y,m-1,d); }
+function fmtFecha(d){ return d.toLocaleDateString('es-MX', {day:'2-digit', month:'short'}); }
+function addDays(d, n){ const dt = new Date(d); dt.setDate(dt.getDate()+n); return dt; }
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function mondayOf(d){
+  const dt = new Date(d);
+  const day = dt.getDay(); // 0=domingo..6=sábado
+  const diff = day===0 ? -6 : 1-day;
+  dt.setDate(dt.getDate()+diff);
+  return dt;
+}
+const WD = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+const MO = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+const NEAR_START = -14, NEAR_END = 29;
+
+// ---------- estado mutable (se reconstruye cada vez que llegan datos nuevos) ----------
+let people = [], semaforo = {}, totales = {}, proyectos = [], activos = [];
+let horas = [];
+let today, gridStart, gridEnd, gridDays;
+let selectedPerson = null;
+let sortKey = 'fechaFinal', sortAsc = true;
+
+function genId(){ return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+
+function isOverdue(p){
+  const d = parseFecha(p.fechaFinal || p.fechaInicio);
+  return d && d < today && isActive(p);
+}
+function projectsFor(person){ return activos.filter(p => p.asignados[person] !== undefined); }
+function horasDeProyecto(proyectoId){ return horas.filter(h=>h.proyectoId===proyectoId).reduce((s,h)=>s+h.horas,0); }
+function horasDePersona(person){ return horas.filter(h=>h.persona===person).reduce((s,h)=>s+h.horas,0); }
+
+function buildState(rawData){
+  people = rawData.people.filter(p => !EXCLUDED_PEOPLE.includes(p));
+  semaforo = rawData.semaforo;
+  proyectos = rawData.proyectos.filter(p => p.avance).map(p=>{
+    const asignados = {...p.asignados};
+    EXCLUDED_PEOPLE.forEach(e => delete asignados[e]);
+    return {...p, asignados, id: p.id || genId()};
+  });
+  activos = proyectos.filter(isActive);
+  horas = Array.isArray(rawData.horas) ? rawData.horas : [];
+
+  // carga activa = suma de puntos de asignación en proyectos no cerrados (se recalcula siempre desde los datos)
+  totales = {};
+  people.forEach(p=>totales[p]=0);
+  activos.forEach(pr=>{
+    Object.entries(pr.asignados).forEach(([k,v])=>{
+      if(people.includes(k) && typeof v==='number') totales[k]=(totales[k]||0)+v;
+    });
+  });
+
+  today = new Date(); today.setHours(0,0,0,0);
+  gridStart = addDays(today, NEAR_START);
+  gridEnd = addDays(today, NEAR_END);
+  gridDays = [];
+  for(let i=0;i<=NEAR_END-NEAR_START;i++){
+    const d = addDays(gridStart, i);
+    if(d.getDay()===0 || d.getDay()===6) continue; // se omiten sábado y domingo (no se trabaja)
+    gridDays.push(d);
+  }
+
+  if(!selectedPerson || !people.includes(selectedPerson)) selectedPerson = people[0] || null;
+}
+
+function renderEverything(){
+  document.getElementById('today-label').textContent = 'Hoy: ' + today.toLocaleDateString('es-MX', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  document.getElementById('active-count').textContent = activos.length + ' proyectos activos de ' + proyectos.length + ' totales';
+
+  renderIdentityBar();
+  renderPeopleStrip();
+  renderPersonaFilterOptions();
+  renderPersonTabs();
+  renderPersonPanel();
+  renderTable();
+  renderHorasForm();
+}
+
+function renderPeopleStrip(){
+  const maxTotal = Math.max(...people.map(p=>totales[p]), 1);
+  const stripEl = document.getElementById('people-strip');
+  stripEl.innerHTML = '';
+  people.forEach(p=>{
+    const count = activos.filter(pr => Object.keys(pr.asignados).includes(p)).length;
+    const riskColor = semaforo[p] === 'Rojo' ? 'var(--rojo)' : semaforo[p]==='Amarillo' ? 'var(--amarillo)' : 'var(--verde)';
+    const idColor = personColor(p);
+    const card = document.createElement('div');
+    card.className = 'person-card' + (p===selectedPerson?' selected':'');
+    card.dataset.person = p;
+    card.innerHTML = `
+      <div class="person-top">
+        <span class="person-name" style="color:${idColor}">${p}</span>
+        <span class="dot ${semaforo[p]}" title="Semáforo de carga: ${semaforo[p]}"></span>
+      </div>
+      <div class="person-load">${totales[p]}</div>
+      <div class="person-load-label">carga activa</div>
+      <div class="person-bar"><div class="person-bar-fill" style="width:${(totales[p]/maxTotal*100)}%; background:${riskColor};"></div></div>
+      <div class="person-count">${count} proyecto${count===1?'':'s'} activo${count===1?'':'s'}</div>
+    `;
+    card.addEventListener('click', ()=> selectPerson(p));
+    stripEl.appendChild(card);
+  });
+}
+
+function renderPersonaFilterOptions(){
+  const sel = document.getElementById('filter-persona');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Todas las personas</option>';
+  people.forEach(p=>{
+    const opt = document.createElement('option'); opt.value=p; opt.textContent=p;
+    sel.appendChild(opt);
+  });
+  if(people.includes(current)) sel.value = current;
+}
+
+function selectPerson(p){
+  selectedPerson = p;
+  document.querySelectorAll('.person-card').forEach(c=>c.classList.toggle('selected', c.dataset.person===selectedPerson));
+  document.querySelectorAll('.person-tab').forEach(t=>t.classList.toggle('active', t.dataset.person===selectedPerson));
+  document.getElementById('filter-persona').value = selectedPerson || '';
+  renderPersonPanel();
+  renderTable();
+}
+
+function renderPersonTabs(){
+  const el = document.getElementById('person-tabs');
+  el.innerHTML = '';
+  people.forEach(p=>{
+    const count = projectsFor(p).length;
+    const btn = document.createElement('button');
+    btn.className = 'person-tab' + (p===selectedPerson ? ' active' : '');
+    btn.dataset.person = p;
+    btn.innerHTML = `<span class="dot ${semaforo[p]}"></span>${p}<span class="count">${count}</span>`;
+    btn.addEventListener('click', ()=> selectPerson(p));
+    el.appendChild(btn);
+  });
+}
+
+function renderPersonPanel(){
+  const el = document.getElementById('person-panel');
+  el.innerHTML = '';
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
+  if(!selectedPerson){ el.innerHTML = '<div class="no-alerts">No hay integrantes para mostrar todavía.</div>'; return; }
+  const person = selectedPerson;
+
+  // cada proyecto trae su rango real (inicio/fin); si falta uno de los dos, se usa el otro como punto único
+  const own = projectsFor(person).map(p=>{
+    const dIni = parseFecha(p.fechaInicio);
+    const dFin = parseFecha(p.fechaFinal);
+    const start = dIni || dFin;
+    const end = dFin || dIni;
+    return {...p, start, end};
+  });
+
+  const head = document.createElement('div');
+  head.className = 'person-panel-head';
+  head.innerHTML = `
+    <span class="pname" style="color:${personColor(person)}">${person}</span>
+    <span class="pmeta"><span class="dot ${semaforo[person]}"></span> semáforo ${semaforo[person]}</span>
+    <span class="pmeta"><b>${totales[person]}</b> carga activa</span>
+    <span class="pmeta"><b>${own.length}</b> proyecto${own.length===1?'':'s'} activo${own.length===1?'':'s'}</span>
+  `;
+  el.appendChild(head);
+
+  // fuera del rango visible del grid (ya terminaron antes de gridStart, o empiezan después de gridEnd)
+  const viejos = own.filter(p=>p.end && p.end < gridStart).sort((a,b)=>a.end-b.end);
+  const lejos = own.filter(p=>p.start && p.start > gridEnd).sort((a,b)=>a.start-b.start);
+  const sinFecha = own.filter(p=>!p.start && !p.end);
+  const enRango = own.filter(p=> p.start && p.end && !(p.end < gridStart) && !(p.start > gridEnd));
+
+  if(viejos.length){
+    const wrap = document.createElement('div');
+    wrap.className = 'alerts';
+    viejos.forEach(p=>{
+      const rango = sameDay(p.start,p.end) ? fmtFecha(p.end) : `${fmtFecha(p.start)} – ${fmtFecha(p.end)}`;
+      const div = document.createElement('div');
+      div.className = 'alert';
+      div.innerHTML = `<span class="tag">Vencido</span><span><b>${p.cliente}</b> — ${p.nombre} · ${rango} (fuera del rango visible del timeline)</span>`;
+      wrap.appendChild(div);
+    });
+    el.appendChild(wrap);
+  }
+
+  // asignar carriles (lanes) tipo Gantt para que las barras de un mismo proyecto se alineen entre columnas
+  const sorted = [...enRango].sort((a,b)=> a.start-b.start || (b.end-b.start)-(a.end-a.start));
+  const laneEnds = [];
+  sorted.forEach(p=>{
+    let lane = laneEnds.findIndex(endDate => endDate < p.start);
+    if(lane===-1){ lane = laneEnds.length; laneEnds.push(p.end); }
+    else{ laneEnds[lane] = p.end; }
+    p.lane = lane;
+  });
+  const laneCount = Math.max(laneEnds.length, 1);
+  const ROW_H = 20;
+
+  const gridWrap = document.createElement('div');
+  gridWrap.className = 'day-grid-wrap';
+  const grid = document.createElement('div');
+  grid.className = 'day-grid';
+
+  // ¿cuántos proyectos distintos cubren cada día? (para marcar cruces reales, no solo por carril)
+  function coverageCount(day){ return sorted.filter(p=> day>=p.start && day<=p.end).length; }
+
+  gridDays.forEach(day=>{
+    const isToday = sameDay(day, today);
+    const isWeekend = day.getDay()===0 || day.getDay()===6;
+    const isWeekStart = day.getDay()===1;
+    const coverage = coverageCount(day);
+
+    const col = document.createElement('div');
+    col.className = 'day-col' + (isToday?' today':'') + (isWeekend?' weekend':'') + (isWeekStart?' week-start':'');
+
+    const showMonth = day.getDate()===1 || sameDay(day, gridStart);
+    col.innerHTML = `
+      <div class="day-col-head">
+        <div class="mo">${showMonth? MO[day.getMonth()] : ''}</div>
+        <div class="dn">${day.getDate()}</div>
+        <div class="wd">${isToday? 'HOY' : WD[day.getDay()]}</div>
+      </div>
+    `;
+    const body = document.createElement('div');
+    body.className = 'day-col-body gantt' + (coverage>1?' cluster':'');
+    body.style.minHeight = (laneCount*ROW_H + 8)+'px';
+
+    for(let lane=0; lane<laneCount; lane++){
+      const p = sorted.find(pr=>pr.lane===lane && day>=pr.start && day<=pr.end);
+      const row = document.createElement('div');
+      row.className = 'gantt-row';
+      row.style.height = ROW_H+'px';
+      if(p){
+        const isSegStart = sameDay(day, p.start) || sameDay(day, gridStart);
+        const isSegEnd = sameDay(day, p.end) || sameDay(day, gridEnd);
+        const bar = document.createElement('div');
+        bar.className = 'gantt-bar stage-'+p.avance + (isSegStart?' seg-start':'') + (isSegEnd?' seg-end':'');
+        bar.title = `${p.cliente} — ${p.nombre} · ${sameDay(p.start,p.end)?fmtFecha(p.start):fmtFecha(p.start)+' – '+fmtFecha(p.end)} (${STAGE_LABEL[p.avance]||p.avance})`;
+        if(isSegStart) bar.textContent = p.cliente;
+        row.appendChild(bar);
+      }
+      body.appendChild(row);
+    }
+    if(coverage>1){
+      const flag = document.createElement('div'); flag.className='cluster-tag'; flag.textContent='×'+coverage;
+      body.appendChild(flag);
+    }
+    col.appendChild(body);
+    grid.appendChild(col);
+  });
+
+  gridWrap.appendChild(grid);
+  el.appendChild(gridWrap);
+
+  if(lejos.length){
+    const wrap = document.createElement('div');
+    wrap.className = 'alerts';
+    wrap.style.marginTop = '10px';
+    lejos.forEach(p=>{
+      const rango = sameDay(p.start,p.end) ? fmtFecha(p.start) : `${fmtFecha(p.start)} – ${fmtFecha(p.end)}`;
+      const div = document.createElement('div');
+      div.className = 'alert neutral';
+      div.innerHTML = `<span class="tag">Más adelante</span><span><b>${p.cliente}</b> — ${p.nombre} · ${rango} (fuera del rango visible del timeline)</span>`;
+      wrap.appendChild(div);
+    });
+    el.appendChild(wrap);
+  }
+
+  const sf = document.createElement('div');
+  sf.className = 'sinfecha-list';
+  if(sinFecha.length){
+    sf.innerHTML = `<div class="label">Sin fecha definida (${sinFecha.length})</div>`;
+    const chips = document.createElement('div');
+    chips.className = 'sinfecha-chips';
+    sinFecha.forEach(p=>{
+      const chip = document.createElement('span');
+      chip.className = 'chip stage-'+p.avance;
+      chip.title = `${p.cliente} — ${p.nombre}`;
+      chip.textContent = p.cliente + ' — ' + p.nombre;
+      chips.appendChild(chip);
+    });
+    sf.appendChild(chips);
+    el.appendChild(sf);
+  }
+}
+
+function getFiltered(){
+  const term = document.getElementById('search').value.trim().toLowerCase();
+  const persona = document.getElementById('filter-persona').value;
+  const etapa = document.getElementById('filter-etapa').value;
+  const showClosed = document.getElementById('show-closed').value;
+
+  let list = showClosed==='all' ? proyectos : activos;
+
+  if(term){
+    list = list.filter(p => (p.cliente||'').toLowerCase().includes(term) || (p.nombre||'').toLowerCase().includes(term));
+  }
+  if(persona){
+    list = list.filter(p => p.asignados[persona] !== undefined);
+  }
+  if(etapa){
+    list = list.filter(p => p.avance === etapa);
+  }
+  return list;
+}
+
+function renderTable(){
+  let list = getFiltered();
+
+  list = [...list].sort((a,b)=>{
+    let av = a[sortKey], bv = b[sortKey];
+    if(sortKey==='fechaInicio' || sortKey==='fechaFinal'){ av = av? parseFecha(av).getTime() : Infinity; bv = bv? parseFecha(bv).getTime() : Infinity; }
+    if(av===null||av===undefined) av='';
+    if(bv===null||bv===undefined) bv='';
+    if(av<bv) return sortAsc? -1:1;
+    if(av>bv) return sortAsc? 1:-1;
+    return 0;
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  list.forEach(p=>{
+    const tr = document.createElement('tr');
+    const overdue = isOverdue(p);
+    if(overdue) tr.classList.add('overdue-row');
+    const dIni = parseFecha(p.fechaInicio);
+    const dFin = parseFecha(p.fechaFinal);
+    const stageColor = STAGE_COLOR[p.avance] || {bg:'#C9C5C5', c:'#3A3737'};
+    tr.innerHTML = `
+      <td class="num-cell">${p.num||''}</td>
+      <td>${p.cliente||''}</td>
+      <td>${p.nombre||''}</td>
+      <td style="color:var(--ink-soft)">${p.que||'—'}</td>
+      <td class="fecha-cell">${dIni? fmtFecha(dIni) : '—'}</td>
+      <td class="fecha-cell ${overdue?'overdue':''}">${dFin? fmtFecha(dFin) + (overdue?' ⚠':'') : '—'}</td>
+      <td><span class="badge-stage" style="background:${stageColor.bg};color:${stageColor.c}">${p.avance? (STAGE_LABEL[p.avance]||p.avance) : '—'}</span></td>
+      <td><div class="asignados-cell">${Object.keys(p.asignados).map(k=>`<span class="who-chip" style="background:${personColor(k)}22; color:${personColor(k)}; border:1px solid ${personColor(k)}55;">${k}</span>`).join('') || '—'}</div></td>
+      <td class="num-cell">${horasDeProyecto(p.id) || '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.querySelectorAll('thead th[data-key]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(sortKey===key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+    renderTable();
+  });
+});
+
+['search','filter-persona','filter-etapa','show-closed'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    if(id==='filter-persona'){
+      const val = document.getElementById(id).value;
+      if(val) selectPerson(val);
+    }
+    renderTable();
+  });
+});
+
+
+// =====================================================================
+// CARGA Y GUARDADO DE DATOS: vía función serverless (/api/data → Netlify Blobs)
+// =====================================================================
+let editMode = false;
+let saveTimer = null;
+const WHOAMI_KEY = 'rb_whoami';
+
+function setStatus(text, mode){
+  document.getElementById('ed-status').textContent = text;
+  document.getElementById('ed-dot').style.background = mode==='error' ? 'var(--rb-red)' : 'var(--stage-green)';
+}
+
+function currentRawData(){
+  return { people: FALLBACK_DATA.people, semaforo, proyectos, horas };
+}
+
+async function persist(){
+  try{
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(currentRawData())
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    setStatus('Guardado ✓ · ' + new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}));
+  }catch(err){
+    console.error(err);
+    setStatus('No pude guardar los cambios (' + err.message + ').', 'error');
+  }
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  setStatus('Guardando…');
+  saveTimer = setTimeout(persist, 400);
+}
+
+async function loadInitialData(){
+  setStatus('Cargando…');
+  try{
+    const res = await fetch('/api/data');
+    if(res.ok){
+      const rawData = await res.json();
+      if(rawData){
+        buildState(rawData);
+        renderEverything();
+        renderHorasForm();
+        setStatus('Datos guardados en el servidor');
+        return;
+      }
+    }
+  }catch(err){
+    console.error(err);
+  }
+  buildState(FALLBACK_DATA);
+  renderEverything();
+  renderHorasForm();
+  setStatus('Mostrando la copia base — se guardará en el servidor con el primer cambio');
+  persist();
+}
+
+// ---------- identidad ("¿quién eres?") ----------
+function getIdentity(){ try{ return localStorage.getItem(WHOAMI_KEY) || ''; }catch(e){ return ''; } }
+function setIdentity(p){ try{ localStorage.setItem(WHOAMI_KEY, p); }catch(e){} }
+
+function renderIdentityBar(){
+  const el = document.getElementById('identity-bar');
+  const who = getIdentity();
+  if(!who || !people.includes(who)){
+    el.innerHTML = `
+      <span class="id-label">¿Quién eres?</span>
+      <select id="id-select">
+        <option value="">Elige tu nombre…</option>
+        ${people.map(p=>`<option value="${p}">${p}</option>`).join('')}
+      </select>
+    `;
+    document.getElementById('id-select').addEventListener('change', (e)=>{
+      if(e.target.value){ setIdentity(e.target.value); renderIdentityBar(); selectPerson(e.target.value); renderHorasForm(); }
+    });
+  }else{
+    el.innerHTML = `<span class="id-label">Conectado como</span> <b>${who}</b> <button id="id-change" class="id-change">cambiar</button>`;
+    document.getElementById('id-change').addEventListener('click', ()=>{ setIdentity(''); renderIdentityBar(); renderHorasForm(); });
+  }
+}
+
+// ---------- registrar horas ----------
+function renderHorasForm(){
+  const el = document.getElementById('horas-panel');
+  if(!el) return;
+  el.innerHTML = '';
+  const who = getIdentity();
+  if(!who || !people.includes(who)){
+    el.innerHTML = '<div class="no-alerts">Elige quién eres arriba para registrar tus horas.</div>';
+    return;
+  }
+  const own = projectsFor(who);
+  if(own.length===0){
+    el.innerHTML = '<div class="no-alerts">No tienes proyectos activos asignados.</div>';
+    return;
+  }
+  const totalPropio = horasDePersona(who);
+  const summary = document.createElement('div');
+  summary.className = 'horas-summary';
+  summary.innerHTML = `Llevas <b>${totalPropio}</b> hora${totalPropio===1?'':'s'} registradas en total.`;
+  el.appendChild(summary);
+
+  // selector de semana — por default la semana actual, pero se puede elegir cualquier semana pasada
+  const weekBar = document.createElement('div');
+  weekBar.className = 'horas-week';
+  const defaultMonday = mondayOf(today);
+  weekBar.innerHTML = `
+    <label for="horas-week-input">Semana de:</label>
+    <input type="date" id="horas-week-input" value="${ymd(defaultMonday)}">
+    <span class="horas-week-range" id="horas-week-range"></span>
+  `;
+  el.appendChild(weekBar);
+
+  const rangeLabel = weekBar.querySelector('#horas-week-range');
+  const weekInput = weekBar.querySelector('#horas-week-input');
+  function updateRangeLabel(){
+    const monday = mondayOf(new Date(weekInput.value + 'T00:00:00'));
+    const sunday = addDays(monday, 6);
+    rangeLabel.textContent = `(semana del ${fmtFecha(monday)} al ${fmtFecha(sunday)})`;
+  }
+  weekInput.addEventListener('change', updateRangeLabel);
+  updateRangeLabel();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'horas-grid';
+  own.forEach(p=>{
+    const row = document.createElement('div');
+    row.className = 'horas-row';
+    row.innerHTML = `
+      <span class="horas-proyecto">${p.cliente||''} ${p.nombre? '— '+p.nombre : ''}</span>
+      <span class="horas-acum">${horasDeProyecto(p.id)}h acumuladas</span>
+      <input type="number" min="0" step="0.5" placeholder="0" data-id="${p.id}">
+    `;
+    wrap.appendChild(row);
+  });
+  el.appendChild(wrap);
+
+  const btn = document.createElement('button');
+  btn.id = 'horas-save';
+  btn.textContent = 'Guardar horas de esa semana';
+  btn.addEventListener('click', ()=>{
+    const monday = mondayOf(new Date(weekInput.value + 'T00:00:00'));
+    const fecha = ymd(monday);
+    const inputs = wrap.querySelectorAll('input[data-id]');
+    let any = false;
+    inputs.forEach(inp=>{
+      const v = parseFloat(inp.value);
+      if(v && v>0){
+        horas.push({id:genId(), fecha, persona:who, proyectoId:inp.dataset.id, horas:v});
+        any = true;
+      }
+    });
+    if(any){
+      scheduleSave();
+      renderHorasForm();
+      renderTable();
+    }
+  });
+  el.appendChild(btn);
+}
+
+// ---------- editor de proyectos y equipo ----------
+function toggleEditor(){
+  editMode = !editMode;
+  const panel = document.getElementById('editor-panel');
+  panel.style.display = editMode ? 'block' : 'none';
+  document.getElementById('ed-toggle').textContent = editMode ? '✕ Cerrar edición' : '✎ Editar datos';
+  if(editMode) renderEditor();
+}
+
+function renderEditor(){
+  const panel = document.getElementById('editor-panel');
+  panel.innerHTML = '';
+
+  const addBtn = document.createElement('button');
+  addBtn.id = 'ed-add';
+  addBtn.textContent = '+ Agregar proyecto';
+  addBtn.style.marginBottom = '10px';
+  addBtn.addEventListener('click', ()=>{
+    proyectos.push({num:null, cliente:'', nombre:'', que:'', fechaInicio:null, fechaFinal:null, avance:'00_Hold', asignados:{}});
+    renderEditor();
+    commitEditorChanges();
+  });
+  panel.appendChild(addBtn);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'editor-wrap';
+  const table = document.createElement('table');
+  table.className = 'editor';
+  const allPeople = FALLBACK_DATA.people.filter(p=>!EXCLUDED_PEOPLE.includes(p));
+  table.innerHTML = `<thead><tr>
+    <th>#</th><th>Cliente</th><th>Proyecto</th><th>Siguiente paso</th>
+    <th>Inicio</th><th>Fin</th><th>Etapa</th>
+    ${allPeople.map(p=>`<th>${p}</th>`).join('')}
+    <th></th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
+
+  proyectos.forEach((p, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" class="ed-num" data-f="num" value="${p.num||''}"></td>
+      <td><input type="text" class="ed-cliente" data-f="cliente" value="${(p.cliente||'').replace(/"/g,'&quot;')}"></td>
+      <td><input type="text" class="ed-nombre" data-f="nombre" value="${(p.nombre||'').replace(/"/g,'&quot;')}"></td>
+      <td><input type="text" class="ed-que" data-f="que" value="${(p.que||'').replace(/"/g,'&quot;')}"></td>
+      <td><input type="date" class="ed-fecha" data-f="fechaInicio" value="${p.fechaInicio||''}"></td>
+      <td><input type="date" class="ed-fecha" data-f="fechaFinal" value="${p.fechaFinal||''}"></td>
+      <td><select data-f="avance" style="background:${STAGE_COLOR[p.avance]?.bg||'#C9C5C5'}; color:${STAGE_COLOR[p.avance]?.c||'#3A3737'}; font-weight:600;">
+        ${['00_Hold','01_Inicio','02_Medio','03_Final','00_Cerrado'].map(s=>`<option value="${s}" ${p.avance===s?'selected':''} style="background:${STAGE_COLOR[s].bg}; color:${STAGE_COLOR[s].c};">${STAGE_LABEL[s]}</option>`).join('')}
+      </select></td>
+      ${allPeople.map(person=>`<td><input type="text" class="ed-asig" data-person="${person}" placeholder="—" value="${p.asignados[person]!==undefined ? p.asignados[person] : ''}"></td>`).join('')}
+      <td><button class="ed-del" title="Eliminar proyecto">✕</button></td>
+    `;
+    tr.querySelectorAll('input[data-f], select[data-f]').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const field = inp.dataset.f;
+        proyectos[idx][field] = inp.value || null;
+        commitEditorChanges();
+      });
+    });
+    tr.querySelectorAll('input[data-person]').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const person = inp.dataset.person;
+        const v = inp.value.trim();
+        if(v===''){ delete proyectos[idx].asignados[person]; }
+        else{
+          const n = parseFloat(v.replace(',','.'));
+          if(!isNaN(n)) proyectos[idx].asignados[person] = n;
+        }
+        commitEditorChanges();
+      });
+    });
+    tr.querySelector('.ed-del').addEventListener('click', ()=>{
+      proyectos.splice(idx,1);
+      renderEditor();
+      commitEditorChanges();
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  panel.appendChild(wrap);
+
+  // equipo: semáforo editable
+  const teamWrap = document.createElement('div');
+  teamWrap.className = 'team-editor';
+  allPeople.forEach(person=>{
+    const item = document.createElement('div');
+    item.className = 'te-item';
+    item.innerHTML = `
+      <label>${person}</label>
+      <select data-person="${person}">
+        ${['Rojo','Amarillo','Verde','OUT'].map(s=>`<option value="${s}" ${semaforo[person]===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    `;
+    item.querySelector('select').addEventListener('change', (e)=>{
+      semaforo[person] = e.target.value;
+      commitEditorChanges();
+    });
+    teamWrap.appendChild(item);
+  });
+  panel.appendChild(teamWrap);
+
+  // horas registradas: listado para corregir/borrar entradas
+  if(horas.length){
+    const hWrap = document.createElement('div');
+    hWrap.style.marginTop = '16px';
+    hWrap.style.paddingTop = '14px';
+    hWrap.style.borderTop = '1px solid var(--line)';
+    hWrap.innerHTML = `<div class="label" style="font-family:var(--font-sans); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:8px;">Horas registradas (${horas.length})</div>`;
+    const hTableWrap = document.createElement('div');
+    hTableWrap.className = 'editor-wrap';
+    const hTable = document.createElement('table');
+    hTable.className = 'editor';
+    hTable.innerHTML = '<thead><tr><th>Fecha</th><th>Persona</th><th>Proyecto</th><th>Horas</th><th></th></tr></thead>';
+    const hBody = document.createElement('tbody');
+    [...horas].sort((a,b)=> b.fecha.localeCompare(a.fecha)).forEach(h=>{
+      const proy = proyectos.find(p=>p.id===h.proyectoId);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${h.fecha}</td>
+        <td>${h.persona}</td>
+        <td>${proy ? (proy.cliente||'')+(proy.nombre?' — '+proy.nombre:'') : '(proyecto eliminado)'}</td>
+        <td>${h.horas}</td>
+        <td><button class="ed-del" title="Eliminar registro">✕</button></td>
+      `;
+      tr.querySelector('.ed-del').addEventListener('click', ()=>{
+        horas = horas.filter(x=>x.id!==h.id);
+        renderEditor();
+        commitEditorChanges();
+      });
+      hBody.appendChild(tr);
+    });
+    hTable.appendChild(hBody);
+    hTableWrap.appendChild(hTable);
+    hWrap.appendChild(hTableWrap);
+    panel.appendChild(hWrap);
+  }
+}
+
+function commitEditorChanges(){
+  // reconstruye el estado derivado (totales, activos, etc.) a partir de proyectos/semaforo ya editados, y guarda
+  buildState({ people: FALLBACK_DATA.people, semaforo, proyectos, horas });
+  renderEverything();
+  if(editMode) renderEditor(); // re-render para reflejar filtros/orden sin perder foco de más de un campo a la vez
+  scheduleSave();
+}
+
+document.getElementById('ed-toggle').addEventListener('click', toggleEditor);
+
+// ---------- arranque ----------
+loadInitialData();
+
+</script>
+</body>
+</html>
