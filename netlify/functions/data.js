@@ -58,14 +58,3 @@ exports.handler = async (event) => {
     };
   }
 };
-
-Después de pegarlo, dale clic a "Commit changes..." (arriba a la derecha, ya se ve habilitado en verde). Eso dispara el redeploy solo — espera 1-2 minutos y prueba de nuevo a guardar algo en el dashboard.
-
-Claude works directly with your codebase
-
-Let Claude edit files, run commands, and ship changes from the desktop app, your terminal, or your IDE.
-
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
