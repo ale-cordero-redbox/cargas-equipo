@@ -603,10 +603,37 @@
     transition:background var(--dur-fast) var(--ease-out);
   }
   #horas-save:hover{background:var(--rb-red); border-color:var(--rb-red);}
+  .horas-mensuales-wrap{max-height:70vh;}
+  table.horas-mensuales input.horas-mes-input{width:56px; text-align:center;}
+  table.horas-mensuales td:first-child{min-width:220px;}
+  table.horas-mensuales .horas-row-total{font-weight:700; background:var(--bg-card);}
+  table.horas-mensuales tr.horas-total-row{border-top:2px solid var(--rb-black);}
+  table.horas-mensuales tr.horas-total-row td{background:var(--bg-card); padding-top:8px;}
+  table.porcentajes-tabla input.pct-input{width:64px; text-align:center;}
+  table.porcentajes-tabla td:first-child{min-width:220px;}
+  table.porcentajes-tabla td:nth-child(2){min-width:200px;}
+  .pct-total-cell{font-weight:600;}
+  .pct-total-cell.error{color:var(--rb-red); font-weight:700;}
 
   /* ---------- Editor de proyectos ---------- */
+  .ed-controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;}
+  #ed-add{
+    font-family:var(--font-sans); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.03em;
+    padding:8px 14px; border:1px solid var(--rb-black); border-radius:var(--radius-sm);
+    background:var(--rb-black); color:#fff; cursor:pointer;
+    transition:background var(--dur-fast) var(--ease-out);
+  }
+  #ed-add:hover{background:var(--rb-red); border-color:var(--rb-red);}
+  #ed-search, #ed-filter-persona{
+    font-family:var(--font-sans); font-size:12.5px; padding:8px 10px;
+    border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg-page); color:var(--ink);
+  }
+  #ed-search{flex:1 1 220px; min-width:160px;}
+  table.editor th[data-sort]:hover{color:var(--rb-red);}
   .editor-wrap{
     margin-top:16px;
+    max-height:68vh;
+    overflow-y:auto;
     overflow-x:auto;
     border:1px solid var(--line);
     border-radius:var(--radius-md);
@@ -739,6 +766,11 @@
   </table>
 </section>
 
+<section>
+  <div class="section-title"><span class="num">05</span><h2>Porcentajes</h2></div>
+  <div id="porcentajes-panel"></div>
+</section>
+
 <footer>
   Primer acercamiento — dime qué ajustar: pesos de carga, definición de "cruce de fechas", columnas nuevas, o si quieres que conecte directo con tu Excel para que se actualice solo.
 </footer>
@@ -758,6 +790,14 @@ const STAGE_COLOR = {
   '00_Cerrado':{bg:'#262424',c:'#FFFFFF'},
 };
 const STAGE_ORDER = ['00_Hold','01_Inicio','02_Medio','03_Final'];
+// orden pedido para la tabla del editor: Inicio → Medio → Final → Hold → Cerrado
+const EDITOR_STAGE_ORDER = ['01_Inicio','02_Medio','03_Final','00_Hold','00_Cerrado'];
+function stageSortIndex(avance){
+  const i = EDITOR_STAGE_ORDER.indexOf(avance);
+  return i===-1 ? EDITOR_STAGE_ORDER.length : i;
+}
+let edSortKey = 'avance', edSortAsc = true;
+let edFilterPersona = '', edSearchTerm = '';
 const EXCLUDED_PEOPLE = ['Moni','Jos','José'];
 
 // color único para todos los integrantes — el color ahora se reserva para el estatus de la carga (etapa)
@@ -781,9 +821,20 @@ const WD = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 const MO = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 const NEAR_START = -14, NEAR_END = 29;
 
+// meses fijos para el registro de horas (se puede ampliar más adelante)
+const MESES_HORAS = [
+  {key:'2026-07', label:'Jul'},
+  {key:'2026-08', label:'Ago'},
+  {key:'2026-09', label:'Sep'},
+  {key:'2026-10', label:'Oct'},
+  {key:'2026-11', label:'Nov'},
+  {key:'2026-12', label:'Dic'},
+];
+
 // ---------- estado mutable (se reconstruye cada vez que llegan datos nuevos) ----------
 let people = [], semaforo = {}, totales = {}, proyectos = [], activos = [];
-let horas = [];
+let horasMensuales = {}; // { "<proyectoId>::<persona>": { "2026-07": 12, ... } }
+let porcentajes = {}; // { "<proyectoId>::<persona>": 50 }
 let today, gridStart, gridEnd, gridDays;
 let selectedPerson = null;
 let sortKey = 'fechaFinal', sortAsc = true;
@@ -795,8 +846,58 @@ function isOverdue(p){
   return d && d < today && isActive(p);
 }
 function projectsFor(person){ return activos.filter(p => p.asignados[person] !== undefined); }
-function horasDeProyecto(proyectoId){ return horas.filter(h=>h.proyectoId===proyectoId).reduce((s,h)=>s+h.horas,0); }
-function horasDePersona(person){ return horas.filter(h=>h.persona===person).reduce((s,h)=>s+h.horas,0); }
+function allProjectsFor(person){ return proyectos.filter(p => p.asignados[person] !== undefined); }
+function horasKey(proyectoId, persona){ return proyectoId + '::' + persona; }
+function getHorasMes(proyectoId, persona, mesKey){
+  const k = horasKey(proyectoId, persona);
+  return (horasMensuales[k] && horasMensuales[k][mesKey]) || 0;
+}
+function setHorasMes(proyectoId, persona, mesKey, valor){
+  const k = horasKey(proyectoId, persona);
+  if(!horasMensuales[k]) horasMensuales[k] = {};
+  if(valor > 0) horasMensuales[k][mesKey] = valor;
+  else delete horasMensuales[k][mesKey];
+  if(Object.keys(horasMensuales[k]).length===0) delete horasMensuales[k];
+}
+function totalHorasProyecto(proyectoId){
+  let total = 0;
+  Object.keys(horasMensuales).forEach(k=>{
+    if(k.startsWith(proyectoId+'::')){
+      Object.values(horasMensuales[k]).forEach(v=> total += v);
+    }
+  });
+  return total;
+}
+function totalHorasPersonaMes(persona, mesKey){
+  let total = 0;
+  Object.keys(horasMensuales).forEach(k=>{
+    if(k.endsWith('::'+persona)){
+      total += horasMensuales[k][mesKey] || 0;
+    }
+  });
+  return total;
+}
+function getPorcentaje(proyectoId, persona){
+  const k = horasKey(proyectoId, persona);
+  return porcentajes[k] !== undefined ? porcentajes[k] : null;
+}
+function setPorcentaje(proyectoId, persona, valor){
+  const k = horasKey(proyectoId, persona);
+  if(valor===null || isNaN(valor)) delete porcentajes[k];
+  else porcentajes[k] = valor;
+}
+function totalPorcentajeProyecto(proyectoId){
+  let total = 0, any = false;
+  Object.keys(porcentajes).forEach(k=>{
+    if(k.startsWith(proyectoId+'::')){ total += porcentajes[k]; any = true; }
+  });
+  return any ? total : null;
+}
+function allPorcentajesRegistrados(p){
+  const asignadosList = Object.keys(p.asignados);
+  if(asignadosList.length===0) return false;
+  return asignadosList.every(person => getPorcentaje(p.id, person) !== null);
+}
 
 function buildState(rawData){
   people = rawData.people.filter(p => !EXCLUDED_PEOPLE.includes(p));
@@ -807,7 +908,8 @@ function buildState(rawData){
     return {...p, asignados, id: p.id || genId()};
   });
   activos = proyectos.filter(isActive);
-  horas = Array.isArray(rawData.horas) ? rawData.horas : [];
+  horasMensuales = (rawData.horasMensuales && typeof rawData.horasMensuales==='object') ? rawData.horasMensuales : {};
+  porcentajes = (rawData.porcentajes && typeof rawData.porcentajes==='object') ? rawData.porcentajes : {};
 
   // carga activa = suma de puntos de asignación en proyectos no cerrados (se recalcula siempre desde los datos)
   totales = {};
@@ -842,6 +944,7 @@ function renderEverything(){
   renderPersonPanel();
   renderTable();
   renderHorasForm();
+  renderPorcentajesForm();
 }
 
 function renderPeopleStrip(){
@@ -1102,7 +1205,7 @@ function renderTable(){
       <td class="fecha-cell ${overdue?'overdue':''}">${dFin? fmtFecha(dFin) + (overdue?' ⚠':'') : '—'}</td>
       <td><span class="badge-stage" style="background:${stageColor.bg};color:${stageColor.c}">${p.avance? (STAGE_LABEL[p.avance]||p.avance) : '—'}</span></td>
       <td><div class="asignados-cell">${Object.keys(p.asignados).map(k=>`<span class="who-chip" style="background:${personColor(k)}22; color:${personColor(k)}; border:1px solid ${personColor(k)}55;">${k}</span>`).join('') || '—'}</div></td>
-      <td class="num-cell">${horasDeProyecto(p.id) || '—'}</td>
+      <td class="num-cell">${totalHorasProyecto(p.id) || '—'}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1140,7 +1243,7 @@ function setStatus(text, mode){
 }
 
 function currentRawData(){
-  return { people: FALLBACK_DATA.people, semaforo, proyectos, horas };
+  return { people: FALLBACK_DATA.people, semaforo, proyectos, horasMensuales, porcentajes };
 }
 
 async function persist(){
@@ -1204,11 +1307,11 @@ function renderIdentityBar(){
       </select>
     `;
     document.getElementById('id-select').addEventListener('change', (e)=>{
-      if(e.target.value){ setIdentity(e.target.value); renderIdentityBar(); selectPerson(e.target.value); renderHorasForm(); }
+      if(e.target.value){ setIdentity(e.target.value); renderIdentityBar(); selectPerson(e.target.value); renderHorasForm(); renderPorcentajesForm(); }
     });
   }else{
     el.innerHTML = `<span class="id-label">Conectado como</span> <b>${who}</b> <button id="id-change" class="id-change">cambiar</button>`;
-    document.getElementById('id-change').addEventListener('click', ()=>{ setIdentity(''); renderIdentityBar(); renderHorasForm(); });
+    document.getElementById('id-change').addEventListener('click', ()=>{ setIdentity(''); renderIdentityBar(); renderHorasForm(); renderPorcentajesForm(); });
   }
 }
 
@@ -1222,74 +1325,129 @@ function renderHorasForm(){
     el.innerHTML = '<div class="no-alerts">Elige quién eres arriba para registrar tus horas.</div>';
     return;
   }
-  const own = projectsFor(who);
+  const own = allProjectsFor(who);
   if(own.length===0){
-    el.innerHTML = '<div class="no-alerts">No tienes proyectos activos asignados.</div>';
+    el.innerHTML = '<div class="no-alerts">No tienes proyectos (activos o cerrados) asignados todavía.</div>';
     return;
   }
-  const totalPropio = horasDePersona(who);
+
+  const totalPropio = MESES_HORAS.reduce((s,m)=> s + totalHorasPersonaMes(who, m.key), 0);
   const summary = document.createElement('div');
   summary.className = 'horas-summary';
-  summary.innerHTML = `Llevas <b>${totalPropio}</b> hora${totalPropio===1?'':'s'} registradas en total.`;
+  summary.innerHTML = `Llevas <b>${totalPropio}</b> hora${totalPropio===1?'':'s'} registradas de julio a diciembre 2026.`;
   el.appendChild(summary);
 
-  // selector de semana — por default la semana actual, pero se puede elegir cualquier semana pasada
-  const weekBar = document.createElement('div');
-  weekBar.className = 'horas-week';
-  const defaultMonday = mondayOf(today);
-  weekBar.innerHTML = `
-    <label for="horas-week-input">Semana de:</label>
-    <input type="date" id="horas-week-input" value="${ymd(defaultMonday)}">
-    <span class="horas-week-range" id="horas-week-range"></span>
-  `;
-  el.appendChild(weekBar);
+  const wrap = document.createElement('div');
+  wrap.className = 'editor-wrap horas-mensuales-wrap';
+  const table = document.createElement('table');
+  table.className = 'editor horas-mensuales';
+  table.innerHTML = `<thead><tr>
+    <th>Proyecto</th>
+    ${MESES_HORAS.map(m=>`<th>${m.label}</th>`).join('')}
+    <th>Total</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
 
-  const rangeLabel = weekBar.querySelector('#horas-week-range');
-  const weekInput = weekBar.querySelector('#horas-week-input');
-  function updateRangeLabel(){
-    const monday = mondayOf(new Date(weekInput.value + 'T00:00:00'));
-    const sunday = addDays(monday, 6);
-    rangeLabel.textContent = `(semana del ${fmtFecha(monday)} al ${fmtFecha(sunday)})`;
+  own.forEach(p=>{
+    const tr = document.createElement('tr');
+    const stageColor = STAGE_COLOR[p.avance] || {bg:'#C9C5C5', c:'#3A3737'};
+    let rowTotal = MESES_HORAS.reduce((s,m)=> s + getHorasMes(p.id, who, m.key), 0);
+    tr.innerHTML = `
+      <td>
+        <span class="badge-stage" style="background:${stageColor.bg};color:${stageColor.c}; margin-right:6px;">${STAGE_LABEL[p.avance]||p.avance}</span>
+        ${p.cliente||''}${p.nombre? ' — '+p.nombre : ''}
+      </td>
+      ${MESES_HORAS.map(m=>`<td><input type="number" min="0" step="0.5" class="horas-mes-input" placeholder="0" data-proyecto="${p.id}" data-mes="${m.key}" value="${getHorasMes(p.id, who, m.key) || ''}"></td>`).join('')}
+      <td class="horas-row-total num-cell">${rowTotal || '—'}</td>
+    `;
+    tr.querySelectorAll('.horas-mes-input').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const v = parseFloat(inp.value.replace(',','.'));
+        setHorasMes(inp.dataset.proyecto, who, inp.dataset.mes, isNaN(v)?0:v);
+        scheduleSave();
+        renderHorasForm();
+        renderTable();
+      });
+    });
+    tbody.appendChild(tr);
+  });
+
+  // fila de totales por mes
+  const totalTr = document.createElement('tr');
+  totalTr.className = 'horas-total-row';
+  totalTr.innerHTML = `<td><b>Total por mes</b></td>${MESES_HORAS.map(m=>`<td class="num-cell"><b>${totalHorasPersonaMes(who, m.key) || '—'}</b></td>`).join('')}<td class="num-cell"><b>${totalPropio || '—'}</b></td>`;
+  tbody.appendChild(totalTr);
+
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  el.appendChild(wrap);
+}
+
+// ---------- porcentajes de participación ----------
+function renderPorcentajesForm(){
+  const el = document.getElementById('porcentajes-panel');
+  if(!el) return;
+  el.innerHTML = '';
+  const who = getIdentity();
+  if(!who || !people.includes(who)){
+    el.innerHTML = '<div class="no-alerts">Elige quién eres arriba para escribir tus porcentajes.</div>';
+    return;
   }
-  weekInput.addEventListener('change', updateRangeLabel);
-  updateRangeLabel();
+  const own = allProjectsFor(who);
+  if(own.length===0){
+    el.innerHTML = '<div class="no-alerts">No tienes proyectos (activos o cerrados) asignados todavía.</div>';
+    return;
+  }
+
+  const help = document.createElement('div');
+  help.className = 'horas-summary';
+  help.innerHTML = `Escribe qué porcentaje del trabajo de cada proyecto hiciste tú. Al lado ves con quién más lo trabajaste y su porcentaje, si ya lo registró.`;
+  el.appendChild(help);
 
   const wrap = document.createElement('div');
-  wrap.className = 'horas-grid';
-  own.forEach(p=>{
-    const row = document.createElement('div');
-    row.className = 'horas-row';
-    row.innerHTML = `
-      <span class="horas-proyecto">${p.cliente||''} ${p.nombre? '— '+p.nombre : ''}</span>
-      <span class="horas-acum">${horasDeProyecto(p.id)}h acumuladas</span>
-      <input type="number" min="0" step="0.5" placeholder="0" data-id="${p.id}">
-    `;
-    wrap.appendChild(row);
-  });
-  el.appendChild(wrap);
+  wrap.className = 'editor-wrap';
+  const table = document.createElement('table');
+  table.className = 'editor porcentajes-tabla';
+  table.innerHTML = `<thead><tr>
+    <th>Proyecto</th><th>Con quién</th><th>Tu %</th><th>Total registrado</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
 
-  const btn = document.createElement('button');
-  btn.id = 'horas-save';
-  btn.textContent = 'Guardar horas de esa semana';
-  btn.addEventListener('click', ()=>{
-    const monday = mondayOf(new Date(weekInput.value + 'T00:00:00'));
-    const fecha = ymd(monday);
-    const inputs = wrap.querySelectorAll('input[data-id]');
-    let any = false;
-    inputs.forEach(inp=>{
-      const v = parseFloat(inp.value);
-      if(v && v>0){
-        horas.push({id:genId(), fecha, persona:who, proyectoId:inp.dataset.id, horas:v});
-        any = true;
-      }
-    });
-    if(any){
+  own.forEach(p=>{
+    const tr = document.createElement('tr');
+    const stageColor = STAGE_COLOR[p.avance] || {bg:'#C9C5C5', c:'#3A3737'};
+    const otros = Object.keys(p.asignados).filter(person => person!==who);
+    const conQuien = otros.length
+      ? otros.map(person=>{
+          const pct = getPorcentaje(p.id, person);
+          return `<span class="who-chip" style="background:${personColor(person)}22; color:${personColor(person)}; border:1px solid ${personColor(person)}55;">${person}${pct!==null? ' · '+pct+'%' : ''}</span>`;
+        }).join(' ')
+      : '<span style="color:var(--ink-soft); font-style:italic;">trabajaste solo</span>';
+    const totalReg = totalPorcentajeProyecto(p.id);
+    const completo = allPorcentajesRegistrados(p);
+    const esError = completo && totalReg !== 100;
+    tr.innerHTML = `
+      <td>
+        <span class="badge-stage" style="background:${stageColor.bg};color:${stageColor.c}; margin-right:6px;">${STAGE_LABEL[p.avance]||p.avance}</span>
+        ${p.cliente||''}${p.nombre? ' — '+p.nombre : ''}
+      </td>
+      <td><div class="asignados-cell">${conQuien}</div></td>
+      <td><input type="number" min="0" max="100" step="1" class="pct-input" placeholder="%" data-proyecto="${p.id}" value="${getPorcentaje(p.id, who) ?? ''}"></td>
+      <td class="num-cell pct-total-cell ${esError?'error':''}">${totalReg!==null ? totalReg+'%' : '—'}${esError? ' ⚠ ERROR' : ''}</td>
+    `;
+    tr.querySelector('.pct-input').addEventListener('change', (e)=>{
+      const raw = e.target.value.trim();
+      const v = raw==='' ? null : Math.max(0, Math.min(100, parseFloat(raw.replace(',','.'))));
+      setPorcentaje(p.id, who, v);
       scheduleSave();
-      renderHorasForm();
-      renderTable();
-    }
+      renderPorcentajesForm();
+    });
+    tbody.appendChild(tr);
   });
-  el.appendChild(btn);
+
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  el.appendChild(wrap);
 }
 
 // ---------- editor de proyectos y equipo ----------
@@ -1305,31 +1463,94 @@ function renderEditor(){
   const panel = document.getElementById('editor-panel');
   panel.innerHTML = '';
 
+  const allPeople = FALLBACK_DATA.people.filter(p=>!EXCLUDED_PEOPLE.includes(p));
+
+  // ---------- barra de controles: agregar, buscar, filtrar por persona ----------
+  const controls = document.createElement('div');
+  controls.className = 'ed-controls';
+
   const addBtn = document.createElement('button');
   addBtn.id = 'ed-add';
   addBtn.textContent = '+ Agregar proyecto';
-  addBtn.style.marginBottom = '10px';
   addBtn.addEventListener('click', ()=>{
     proyectos.push({num:null, cliente:'', nombre:'', que:'', fechaInicio:null, fechaFinal:null, avance:'00_Hold', asignados:{}});
     renderEditor();
     commitEditorChanges();
   });
-  panel.appendChild(addBtn);
+  controls.appendChild(addBtn);
+
+  const searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.id = 'ed-search';
+  searchInput.placeholder = 'Buscar por # , cliente o proyecto…';
+  searchInput.value = edSearchTerm;
+  searchInput.addEventListener('input', ()=>{ edSearchTerm = searchInput.value; renderEditor(); });
+  controls.appendChild(searchInput);
+
+  const personaSelect = document.createElement('select');
+  personaSelect.id = 'ed-filter-persona';
+  personaSelect.innerHTML = '<option value="">Todas las personas</option>' +
+    allPeople.map(p=>`<option value="${p}" ${edFilterPersona===p?'selected':''}>${p}</option>`).join('');
+  personaSelect.value = edFilterPersona;
+  personaSelect.addEventListener('change', ()=>{ edFilterPersona = personaSelect.value; renderEditor(); });
+  controls.appendChild(personaSelect);
+
+  panel.appendChild(controls);
+
+  // ---------- filtrar y ordenar sin perder de referencia el índice real en "proyectos" ----------
+  let rows = proyectos.map((p, idx)=>({p, idx}));
+
+  if(edSearchTerm.trim()){
+    const term = edSearchTerm.trim().toLowerCase();
+    rows = rows.filter(({p})=>
+      (p.num||'').toLowerCase().includes(term) ||
+      (p.cliente||'').toLowerCase().includes(term) ||
+      (p.nombre||'').toLowerCase().includes(term)
+    );
+  }
+  if(edFilterPersona){
+    rows = rows.filter(({p})=> p.asignados[edFilterPersona] !== undefined);
+  }
+
+  rows.sort((a,b)=>{
+    let av, bv;
+    if(edSortKey==='avance'){ av = stageSortIndex(a.p.avance); bv = stageSortIndex(b.p.avance); }
+    else if(edSortKey==='num'){ av = parseFloat(a.p.num) ; bv = parseFloat(b.p.num); if(isNaN(av)) av = a.p.num||''; if(isNaN(bv)) bv = b.p.num||''; }
+    else { av = (a.p[edSortKey]||'').toString().toLowerCase(); bv = (b.p[edSortKey]||'').toString().toLowerCase(); }
+    if(av<bv) return edSortAsc? -1:1;
+    if(av>bv) return edSortAsc? 1:-1;
+    return 0;
+  });
 
   const wrap = document.createElement('div');
   wrap.className = 'editor-wrap';
   const table = document.createElement('table');
   table.className = 'editor';
-  const allPeople = FALLBACK_DATA.people.filter(p=>!EXCLUDED_PEOPLE.includes(p));
+  const COLS = [
+    {key:'num', label:'#'},
+    {key:'cliente', label:'Cliente'},
+    {key:'nombre', label:'Proyecto'},
+    {key:null, label:'Siguiente paso'},
+    {key:null, label:'Inicio'},
+    {key:null, label:'Fin'},
+    {key:'avance', label:'Etapa'},
+  ];
   table.innerHTML = `<thead><tr>
-    <th>#</th><th>Cliente</th><th>Proyecto</th><th>Siguiente paso</th>
-    <th>Inicio</th><th>Fin</th><th>Etapa</th>
+    ${COLS.map(c=>`<th ${c.key?`data-sort="${c.key}"`:''}>${c.label}${c.key===edSortKey? (edSortAsc?' ▲':' ▼') : ''}</th>`).join('')}
     ${allPeople.map(p=>`<th>${p}</th>`).join('')}
     <th></th>
   </tr></thead>`;
+  table.querySelectorAll('th[data-sort]').forEach(th=>{
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.sort;
+      if(edSortKey===key) edSortAsc = !edSortAsc; else { edSortKey = key; edSortAsc = true; }
+      renderEditor();
+    });
+  });
   const tbody = document.createElement('tbody');
 
-  proyectos.forEach((p, idx)=>{
+  rows.forEach(({p, idx})=>{
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="text" class="ed-num" data-f="num" value="${p.num||''}"></td>
@@ -1393,47 +1614,11 @@ function renderEditor(){
     teamWrap.appendChild(item);
   });
   panel.appendChild(teamWrap);
-
-  // horas registradas: listado para corregir/borrar entradas
-  if(horas.length){
-    const hWrap = document.createElement('div');
-    hWrap.style.marginTop = '16px';
-    hWrap.style.paddingTop = '14px';
-    hWrap.style.borderTop = '1px solid var(--line)';
-    hWrap.innerHTML = `<div class="label" style="font-family:var(--font-sans); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:8px;">Horas registradas (${horas.length})</div>`;
-    const hTableWrap = document.createElement('div');
-    hTableWrap.className = 'editor-wrap';
-    const hTable = document.createElement('table');
-    hTable.className = 'editor';
-    hTable.innerHTML = '<thead><tr><th>Fecha</th><th>Persona</th><th>Proyecto</th><th>Horas</th><th></th></tr></thead>';
-    const hBody = document.createElement('tbody');
-    [...horas].sort((a,b)=> b.fecha.localeCompare(a.fecha)).forEach(h=>{
-      const proy = proyectos.find(p=>p.id===h.proyectoId);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${h.fecha}</td>
-        <td>${h.persona}</td>
-        <td>${proy ? (proy.cliente||'')+(proy.nombre?' — '+proy.nombre:'') : '(proyecto eliminado)'}</td>
-        <td>${h.horas}</td>
-        <td><button class="ed-del" title="Eliminar registro">✕</button></td>
-      `;
-      tr.querySelector('.ed-del').addEventListener('click', ()=>{
-        horas = horas.filter(x=>x.id!==h.id);
-        renderEditor();
-        commitEditorChanges();
-      });
-      hBody.appendChild(tr);
-    });
-    hTable.appendChild(hBody);
-    hTableWrap.appendChild(hTable);
-    hWrap.appendChild(hTableWrap);
-    panel.appendChild(hWrap);
-  }
 }
 
 function commitEditorChanges(){
   // reconstruye el estado derivado (totales, activos, etc.) a partir de proyectos/semaforo ya editados, y guarda
-  buildState({ people: FALLBACK_DATA.people, semaforo, proyectos, horas });
+  buildState({ people: FALLBACK_DATA.people, semaforo, proyectos, horasMensuales, porcentajes });
   renderEverything();
   if(editMode) renderEditor(); // re-render para reflejar filtros/orden sin perder foco de más de un campo a la vez
   scheduleSave();
